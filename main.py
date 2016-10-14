@@ -21,6 +21,4 @@ MaxIt = 400
 
 sol = CreateRandomSolution(model, n)
 
-K, sol = getBestNest(sol,sol,model)
-
-print sol
+K, sol = getBestNest(sol,sol["Eggs"],model)

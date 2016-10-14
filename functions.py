@@ -1,5 +1,6 @@
 import numpy as np
 from numpy import random as rnd
+from SerialSGS import SerialSGS as SSGS
 
 def CreateRandomSolution(model, n):
 
@@ -10,10 +11,16 @@ def CreateRandomSolution(model, n):
 
 	return pob
 
-def getBestNest(sol, newSol, model):
+def getBestNest(sol, newEgg, model):
 
-	for j in sol["Eggs"].shape[0]:
+	for j in range(sol["Eggs"].shape[0]):
 
-		 = SerialSGS(model, , 0)
+		newSol = SSGS(model, sol["Eggs"][j] , 0)
+		
+		if newSol["Cmax"] <= sol["Fitness"][j]:
+			sol["Fitness"][j] = newSol["Cmax"]
+			sol["Eggs"][j] = newEgg[j]
 
-		 if 
+	print min(sol["Fitness"])
+
+	return 1,2
