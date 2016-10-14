@@ -17,3 +17,5 @@
 - Implement a comparison between the dispersion with the upper bound as a measurement parameter.
 
 - Compare with a Genetic Algorithm.
+
+- Improve performance using Numpy.

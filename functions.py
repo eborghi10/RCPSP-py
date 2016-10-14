@@ -6,7 +6,7 @@ def CreateRandomSolution(model, n):
 
 	pob = {
 		"Eggs" : rnd.rand(n,model["n"]),
-		"Fitness" : float('inf') * np.ones(n)
+		"Fitness" : [float('inf')] * n
 	}
 
 	return pob
@@ -21,6 +21,10 @@ def getBestNest(sol, newEgg, model):
 			sol["Fitness"][j] = newSol["Cmax"]
 			sol["Eggs"][j] = newEgg[j]
 
-	print min(sol["Fitness"])
+	K = sol["Fitness"].index(min(sol["Fitness"]))
+	
+	sol.update({
+		"sol" : SSGS(model, sol["Eggs"][K],0)
+	})
 
-	return 1,2
+	return K, sol

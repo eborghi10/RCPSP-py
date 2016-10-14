@@ -14,19 +14,19 @@ def CrearModelo():
 	Modelo.update( {
 		"K" : 6,
 		"n" : L - 2,
-		"N" : np.zeros( (L+2,L+2) )
+		"N" : np.zeros( (L,L) )
 	} )
 
-	Modelo["N"][2][1] = 1
-	Modelo["N"][3][1] = 1
+	Modelo["N"][1][0] = 1
+	Modelo["N"][2][0] = 1
+	Modelo["N"][3][2] = 1
 	Modelo["N"][4][3] = 1
-	Modelo["N"][5][4] = 1
-	Modelo["N"][6][4] = 1
+	Modelo["N"][5][3] = 1
+	Modelo["N"][6][0] = 1
 	Modelo["N"][7][1] = 1
-	Modelo["N"][8][2] = 1
-	Modelo["N"][9][5] = 1
-	Modelo["N"][9][6] = 1
-	Modelo["N"][9][7] = 1
-	Modelo["N"][9][8] = 1
+	Modelo["N"][8][4] = 1
+	Modelo["N"][8][5] = 1
+	Modelo["N"][8][6] = 1
+	Modelo["N"][8][7] = 1
 
 	return Modelo

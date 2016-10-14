@@ -22,3 +22,6 @@ MaxIt = 400
 sol = CreateRandomSolution(model, n)
 
 K, sol = getBestNest(sol,sol["Eggs"],model)
+Best = sol
+
+BestCosts = [0] * MaxIt
