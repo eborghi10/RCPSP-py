@@ -2,7 +2,8 @@ import numpy as np
 
 # Crear un modelo de RCPSP de un recurso
 
-def CrearModelo():
+def create_model():
+	
 	Modelo = {
 	"R" : 1,
 	"r" : [0, 2, 6, 4, 4, 3, 1, 5, 0],

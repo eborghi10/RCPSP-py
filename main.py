@@ -1,7 +1,9 @@
 import os
 import platform
-from CrearModelo import CrearModelo
-from functions import *
+from CargarModelo import load_model
+import cuckoo_search
+import analyze_results
+import print_results
 
 SO = platform.system()
 
@@ -12,16 +14,20 @@ elif SO == 'Linux':
 else:
 	print "ERROR: OS not recognized"
 
-model = CrearModelo()
+sum_dev = 0
+test = "j30"
 
-n = 25
-Pa = 0.25
+T = use_model(test)
 
-MaxIt = 400
+for it in range(T):
 
-sol = CreateRandomSolution(model, n)
+	model = load_model(test, it, T)
 
-K, sol = getBestNest(sol,sol["Eggs"],model)
-Best = sol
+	sol, MC, MPE = cukoo_search(model, T)
 
-BestCosts = [0] * MaxIt
+	analyze_results(model, Sol["Cmax"], it, T, test)
+
+	if T == 1:
+		print_results(model, Sol["I"], MC, MPE)
+
+# fclose(All)

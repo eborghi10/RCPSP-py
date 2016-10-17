@@ -19,3 +19,7 @@
 - Compare with a Genetic Algorithm.
 
 - Improve performance using Numpy.
+
+- Dynamic allocation of variables
+
+- Merge functions into one library file (of load files)
