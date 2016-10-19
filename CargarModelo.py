@@ -1,12 +1,12 @@
 from math import abs
 import import_from_PSPLIB
-import print_graph
+from print_graph import print_graph
 
-def load_optimum():
+#def load_optimum():
 
-def load_limit():
+#def load_limit():
 
-def load_others():
+#def load_others():
 
 def load_model(str, it, T):
 
