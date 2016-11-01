@@ -62,8 +62,10 @@ def A(C, t, sol, rcpsp):
 	return s
 
 def checkResources(ES, LS, res, Rk):
-#	print "CHECK RESOURCES"
-#	raw_input()
+
+	print ES, LS
+	raw_input()
+
 	ret = 1
 	for t in range(ES,LS):
 

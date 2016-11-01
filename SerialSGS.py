@@ -28,14 +28,7 @@ def SerialSGS(rcpsp, I, graphic):
 	for mu in range(1,n):
 
 		D = []
-
-		print "I = " + str(I)
-		print "C = " + str(C)
-
-		print "is not member: " + str(is_not_membc(I,C))
-
-#		raw_input()
-
+		
 		for dd in is_not_membc(I,C):
 
 			# Task in order to be scheduled:

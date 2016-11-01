@@ -1,9 +1,10 @@
 import os
 import platform
 from functions import *
-import SerialSGS
+from SerialSGS import SerialSGS
 
 def cuckoo_search(model, T):
+
 	n = 25
 	Pa = 0.25
 
@@ -25,7 +26,7 @@ def cuckoo_search(model, T):
 		newSol["Eggs"] = getCuckoos(sol, K, model)
 
 		# Get the best solution
-		None, sol = getBestNest(sol, newSol["Eggs"], model)
+		_, sol = getBestNest(sol, newSol["Eggs"], model)
 		# MPE[it] = 100 * sum()
 
 		# Discover and randomize
