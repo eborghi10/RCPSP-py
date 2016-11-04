@@ -13,14 +13,15 @@ if SO == 'Windows':
 elif SO == 'Linux':
 	os.system('clear')
 else:
-	print "ERROR: OS not recognized"
+	raise Exception('OS not recognized')
 
+global sum_dev
 sum_dev = 0
-test = "j30"
+test = "[]"
 
 T = use_model(test)
 
-for it in range(1,T):
+for it in range(1,T+1):
 
 	model = load_model(test, it, T)
 

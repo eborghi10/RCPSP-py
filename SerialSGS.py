@@ -1,10 +1,35 @@
 import numpy as np
 from extras import *
 
+def newTask(D, i, string):
+	# Selects the best task to be scheduled
+	#
+	# Priority Rule-Based Heuristics
+	# "Handbook of Recent Advances in Scheduling" - Kolisch [1999]
+	# " HEURISTIC ALGORITHMS FOR SOLVING THE RESOURCE-CONSTRAINED PROJECT
+	# SCHEDULING PROBLEM: CLASSIFICATION AND COMPUTATIONAL ANALYSIS"
+	if string == "FIFO":
+		j = D[0]
+		D.remove(D[0])
+	elif string == "FIFOenI":
+		# TODO: COMPLETE
+		j = j[0]
+		#
+	else:
+		j = D[0]
+		D.remove(D[0])
+
+	return j, D
+
+def makespan(rcpsp, I):
+
+	# TODO.
+	pass
+
 def SerialSGS(rcpsp, I, graphic):
 	# Algorithm: Kolisch [2015] page 9
 
-	I = corregir(I)
+	I = srk2al(I) + 2
 
 	n = rcpsp["n"]	# Number of non-dummy activities
 	d = rcpsp["d"]	# Processing time of each activity
@@ -23,75 +48,67 @@ def SerialSGS(rcpsp, I, graphic):
 		"Sol" : [0] * n
 	}
 
-	C = [0]
+	C = [1]
 
-	for mu in range(1,n):
+	for mu in range(1,n+1):
 
 		D = []
+
+#		print "I = " + str(I)
+#		print "d = " + str(d[1:-1])
+#		print "C = " + str(C)
+#		print "dd = " + str(is_not_membc(I,C))
 		
 		for dd in is_not_membc(I,C):
 
 			# Task in order to be scheduled:
-			print "Task to be scheduled = " + str(dd)
-#			print "Predecessors = " + str(N[dd+1,:])
-			di = buscar(N[dd,:])
-			print "Predecessors = " + str(di)
+			di = buscar(N[dd-1,:])
+#			print "Task to be scheduled = " + str(dd) \
+#				+ "\t Predecessors = " + str(di)
+#			raw_input()
 
 			# All of its predecessor were scheduled?
 			if ismembc(di,C):
 				D.append(dd)
 
-		print "D = " + str(D)
-#		raw_input()
+#		print "D = " + str(D)
 		j = D[0]
-		print "Task chosen = " + str(j)
+#		print "Task chosen = " + str(j) + "\td = " + str(d[j-1]) + "\n"
 
 		# Searchs for the Lastest Start Time 
 		# of its predecessors
 		H = []
 
-		print "Predecessors = " + str(buscar(N[j,:]))
+		for h in buscar(N[j-1,:]):
 
-		for h in buscar(N[j,:]):
+#			print "h = " + str(h)
 
-			print "h = " + str(h)
-
-			if h == 0:
+			if h == 1:
 				H.append(0)
 			else:
-				H.append(S["Sol"][h-1] + d[h])
+				H.append(S["Sol"][h-1] + d[h-1])
 
-		print "H = " + str(H)
-		print "d = " + str(d)
+#		print "H = " + str(H)
+#		print "d_j = " + str(d[j-1]) + "\t (int) = " + str(int(d[j-1]))
 
-		ES[j-1] = max(H)
-		LS[j-1] = ES[j-1] + d[j]
+		ES[j-2] = int(max(H))
+		LS[j-2] = ES[j-2] + int(d[j-1])
 
-#		raw_input()
+#		print "ES: " + str(ES) + "\t LS: " + str(LS)
 
-		print "ES = " + str(ES[j-1])
-		print "LS = " + str(LS[j-1]-1)
-		print "r = " + str(r)
-		print "Rk = " + str(Rk)
+		ES[j-2], LS[j-2] = checkResources(ES[j-2],d[j-1],r[j],Rk)
 
-		while not checkResources(ES[j-1],LS[j-1]-1,r[j],Rk):
-			ES[j-1] = ES[j-1] + 1
-			LS[j-1] = ES[j-1] + d[j]
+#		print "ES: " + str(ES) + "\t LS: " + str(LS) + "\n"
 
-		for t in range(ES[j-1],LS[j-1]-1):
+# TODO: PONER DENTRO DE CheckResources()
+		for t in range(ES[j-2],LS[j-2]):
 			Rk[0][t] += -r[j]
 
-		print "Rk = " + str(Rk[0])
-		
-#		raw_input()
-
-		S["Sol"][j] = ES[j-1]
-
-		print "S[\"Sol\"] = " + str(S["Sol"])
+		S["Sol"][j-2] = ES[j-2]
 
 		C.append(j)
 
-	print "Solucion final: " + str(S["Sol"])
+#	print "Solucion final: " + str(S["Sol"])
 
 	ind = S["Sol"].index(max(S["Sol"]))
 

@@ -1,23 +1,13 @@
+def srk2al(s):
 
-def load_optimum(file, it):
+	print "s: " + str(s)
 
-	found = False
-	fobj = open(file)
+	A = [i[0] for i in sorted(enumerate(s), key=lambda x:x[1])]
 
-	for idx,line in enumerate(fobj):
+	print "A: " + str(A)
+	return A
 
-		strings = line.rstrip().split()
+srk2al([0.3989, 0.8145, 0.1769, 0.2486, 0.9397, 0.9713, 0.1771])
 
-		if len(strings) > 0:
+# A = [4 5 1 3 6 7 2];
 
-			if found == True and len(strings) > 3:
-				if idx == idxObj:
-					fobj.close()
-					print "ARCHIVO CERRADO"
-					return strings[3]	# LB
-
-			if strings[0] == "Par":
-				idxObj = idx + it + 2	# 2: 0 index and horizontal line
-				found = True
-
-print load_optimum("dataset/j60lb.sm", 82)

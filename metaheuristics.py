@@ -1,50 +1,66 @@
+# coding=utf-8
+
 import os
 import platform
 from functions import *
-from SerialSGS import SerialSGS
+from SerialSGS import SerialSGS, makespan
+from numpy import random as np
 
 def cuckoo_search(model, T):
+
+	global n, Pa
 
 	n = 25
 	Pa = 0.25
 
 	MaxIt = 400
 
-	sol = CreateRandomSolution(model, n)
-
-	K, sol = getBestNest(sol,sol["Eggs"],model)
-	Best = sol
+	pob = CreateRandomSolution(model, 'ActivityList')
+#	pob = CreateRandomSolution(model, 'RandomKey')
 
 	BestCosts = [0] * MaxIt
-	BestCosts[0] = Best["Sol"]["Cmax"]
+	MPE = [0] * MaxIt
 	it = 0
 
 	while it < MaxIt:
+
 		it += 1
 
 		# Generate new solutions
-		newSol["Eggs"] = getCuckoos(sol, K, model)
+		newEgg = getCuckoos(model, pob)
 
-		# Get the best solution
-		_, sol = getBestNest(sol, newSol["Eggs"], model)
-		# MPE[it] = 100 * sum()
+		# Calculate Makespan
+		cmax, Rk = makespan(model, newEgg)
+
+
+		j = np.randint(1,n)
+		Fj = pob["Fitness"][j]
+
+		if cmax < Fj:
+			# Evito el cálculo innecesario de RUR()
+			pob["Fitness"][j] = cmax
+			pob["Eggs"][j] = newEgg
+		elif cmax == Fj:
+			_, Rj = makespan(model, pob["Eggs"][j])
+			if meanRUR(model, Rk, cmax) < meanRUR(model, Rj, Fj):
+				Pob["Fitness"][j] = cmax
+				Pob["Eggs"][j] = newEgg
 
 		# Discover and randomize
-		newSol["Eggs"] = empty_nests(sol["Eggs"])
+		pob = empty_nests(pob, model)
 
-		# Get best solution
-		K, newSol = getBestNest(sol, newSol, model)
+		# Get the best solution
+		_, pob = getBestNest(pob, newPob["Eggs"], model)
+		MPE[it] = MPE(pob["Fitness"], cmax)
+		BestCosts[it] = cmax
 
-		if newSol["Sol"]["Cmax"] <= Best["Sol"]["Cmax"]:
-			Best["Sol"] = newSol["Sol"]
+		Sol["I"] = pob["Eggs"][j]
+		Sol["Cmax"] = cmax
 
-		BestCosts[it] = Best["Sol"]["Cmax"]
+		if T == 1:
+			print str(it) + " :: Best Cost = " + str(BestCosts[it])
 
 		if MPE[it] == 0:
 			break
 
-		sol = newSol
-
-	SerialSGS(model, Best["Sol"]["Sol"], 1)
-
-	return sol, MC, MPE
+	return pob, BestCosts[:it], MPE[:it]

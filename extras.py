@@ -1,30 +1,27 @@
 import numpy as np
 
-def corregir(s):
+def srk2al(s):
 	"""
 	From the book: "Resource-Constrained Project 
 	Scheduling: Models, Algorithms and Applications".
 	Chp 1: The Resource Constrained Project Scheduling
 	Problem (page 23). Christian ARTIGUES.
 	"""
+
+	'''
 	if s.ndim == 1:
 		Ub = s.size
 		F = 1
 	else:
 		F, Ub = s.shape
-
+		# TODO:---
+	'''
 	# Return indices of sorted 's'
-#	I = [i[0] for i in sorted(enumerate(s), \
-#		key = lambda x:x[1])]
-
-#	A = np.zeros((F,Ub))
-
-	A = np.tile([i for i in range(1,Ub)],(F,1))
-
-	if A.shape[0] == 1:
-		return A[0]
-	else:
-		return A
+# TODO: THIS IS NOT THE CORRECT IMPLEMENTATION!!
+# Correct example:
+# s = [0.3989, 0.8145, 0.1769, 0.2486, 0.9397, 0.9713, 0.1771]
+# return -> [4 5 1 3 6 7 2]
+	return np.argsort(s)
 
 
 def ismember2(a, b):
@@ -61,22 +58,111 @@ def A(C, t, sol, rcpsp):
 				s += r[c+1]
 	return s
 
-def checkResources(ES, LS, res, Rk):
+def checkResources(ES, d, res, Rk):
 
-	print ES, LS
-	raw_input()
+	dur = ES + d
+	n = 0
 
-	ret = 1
-	for t in range(ES,LS):
+#	print "ES: " + str(ES) + "\t LS: " + str(dur)
+#	print ""
+#	print "Rk = " + str(Rk[0][:])
+#	print "res = " + str(res)
+#	raw_input()
+	
+# TODO: FUNCIONA SOLO PARA UN SOLO RECURSO
+	
+#	V = np.tile(res, d)
+#	print "V = " + str(V)
+#	R = Rk[0][ES+n:dur+n]
+#	print "Rk = " + str(R)
+#	raw_input()
+#	cond = V > R
+#	print "cond -> " + str(cond) + " -> " + str(any(cond))
+#	raw_input()
 
-#		print "t = " + str(t)
-#		print "res = " + str(res)
-		if res > Rk[0][t]:
-			ret = 0
-			break
+	while any(np.tile(res, d) > Rk[0][ES+n:dur+n]):
+		n += 1
+#		V = np.tile(res, d)
+#		R = Rk[0][ES+n:dur+n]
+#		print str(V) + " > " + str(R)
 
-#	print "return: " + str(ret)
-	return ret
+	ES += n
+
+	return ES, ES+d
+
 
 def buscar(N):
-	return [i for i,j in enumerate(N) if j == 1]
+	return [i+1 for i,j in enumerate(N) if j == 1]
+
+
+def MPE(F, C):
+
+	return 100 * sum((F-C)/F) / nSol
+
+
+def meanRUR(rcpsp, res, C):
+	
+	mean(RUR(rcpsp, res, C))
+
+
+def get_limits(N, i, Q) :
+	# Calculates the indices of the predecessor and successor
+	# N: Precedence matrix
+	# i: Task
+
+	## Predecessors
+
+	# Substract each element
+	_pred_ = [x - 1 for x in buscar(N[i+1])]
+
+	if len(_pred_) > 1 :
+		# If there is more than one predecessor,
+		# I have to choose who the tardiness start
+		V = buscar(Q==_pred_[1])
+		pred = _pred_[1]
+		for a in pred[2:]:
+			Vp = _buscar(Q==a)
+			if Vp > V:
+				V = Vp
+				pred = a
+	else :
+		pred = _pred_
+
+	## Successors
+	_sucs_ = [x -1 for x in buscar(N[:][i+1])]
+
+	if len(_sucs_) > 1 :
+		# If there is more than one successor,
+		# I have to choose which starts first
+		V = buscar(Q==_sucs_[1])
+		sucs = _sucs_[1]
+		for a in _sucs_[2:]:
+			Vp = buscar(Q==a)
+			if Vp < V :
+				V = Vp
+				sucs = a
+	else :
+		sucs = _sucs_
+
+	return pred, sucs
+
+def search_index(pred, sucs, Q) :
+	
+	n = len(Q) + 1 # Fix "half-open" interval of Python
+
+	print "P: " + str(pred) + "\t\t S: " + str(sucs)
+
+	if pred == 0 and sucs == n+1 :
+		# The task can be moved to any position
+		pos = np.random.randint(1, n)
+	elif pred == 0 :
+		# There is no left limit
+		pos = np.random.randint(1, sucs)
+	elif sucs == n+1 :
+		# There is no right limit
+		pos = np.random.randint(pred, n)
+	else :
+		# There is no problem with the limits
+		pos = np.random.randint(pred, sucs)
+
+	return buscar(Q==pos)
