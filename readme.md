@@ -26,4 +26,4 @@
 
 ---------------
 
-- Order the files in /src, /include, /tests and, may be, others.
+- Organize the files into /src, /include, /tests and, may be, others.
