@@ -113,7 +113,9 @@ def get_limits(N, i, Q) :
 	## Predecessors
 
 	# Substract each element
-	_pred_ = [x - 1 for x in buscar(N[i+1])]
+#	_pred_ = [x - 1 for x in buscar(N[i-1])]
+	_pred_ = buscar(N[i-1])
+	print "_pred_ = " + str(_pred_)
 
 	if len(_pred_) > 1 :
 		# If there is more than one predecessor,
@@ -121,7 +123,7 @@ def get_limits(N, i, Q) :
 		V = buscar(Q==_pred_[1])
 		pred = _pred_[1]
 		for a in pred[2:]:
-			Vp = _buscar(Q==a)
+			Vp = buscar(Q==a)
 			if Vp > V:
 				V = Vp
 				pred = a
@@ -129,7 +131,12 @@ def get_limits(N, i, Q) :
 		pred = _pred_
 
 	## Successors
-	_sucs_ = [x -1 for x in buscar(N[:][i+1])]
+#	_sucs_ = [x -1 for x in buscar(N[:][i-1])]
+	_sucs_ = buscar(N[:,i-1])
+
+	print "_sucs_ = " + str(_sucs_)
+
+	raw_input()
 
 	if len(_sucs_) > 1 :
 		# If there is more than one successor,
@@ -149,8 +156,6 @@ def get_limits(N, i, Q) :
 def search_index(pred, sucs, Q) :
 	
 	n = len(Q) + 1 # Fix "half-open" interval of Python
-
-	print "P: " + str(pred) + "\t\t S: " + str(sucs)
 
 	if pred == 0 and sucs == n+1 :
 		# The task can be moved to any position

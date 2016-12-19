@@ -63,10 +63,13 @@ def getCuckoos(model, pob):
 
 	q = pob["Eggs"]
 	F = pob["Fitness"]
+	N = model["N"]
 
 	p, j = LevyFlights(F)
-	Q = q[j]
-	N = model["N"]
+	Q = q[j-1]	
+
+	print "j = " + str(j) + "\tq[j] = " + str(Q)
+	raw_input()
 
 	if p >= 0 and p <= 0.3:
 		qNew = Insertion(Q,N)
@@ -80,14 +83,22 @@ def getCuckoos(model, pob):
 	qNew = x["Sol"]
 
 
+# TODO: Swap() e Insertion() son funciones bastante similares
+
 def Swap(Q, N):
 
 	from extras import buscar, get_limits, search_index
 
 	# Selects the task to swap
-	i = rnd.randint(1, max(Q)+1)
+	i = rnd.randint(1, max(Q))	# [1;n]
 	idxI = buscar(Q == i)
+
+	print "TASK = " + str(i) + "\t[idxI] = " + str(idxI)
+
 	pred, sucs = get_limits(N, i, Q)
+
+	print "pred: " + str(pred) + "\t\tsucs: " + str(sucs)
+
 	idxPos = search_index(pred.pop(), sucs.pop(), Q)
 	# NOTE: Swap() doesn't generate infeasible solutions
 	Q[idxI], Q[idxPos] = Q[idxPos], Q[idxI]
@@ -98,11 +109,17 @@ def Swap(Q, N):
 def Insertion(Q, N):
 
 	from extras import buscar, get_limits, search_index
-	
+
 	# Selects the task to insert
-	i = rnd.randint(1, max(Q)+1)
+	i = rnd.randint(1, max(Q))
 	idxI = buscar(Q == i)
+
+	print "TASK = " + str(i) + "\t[idxI] = " + str(idxI)
+
 	pred, sucs = get_limits(N, i, Q)
+
+	print "pred: " + str(pred) + "\t\tsucs: " + str(sucs)
+
 	idxPos = search_index(pred.pop(), sucs.pop(), Q)
 	# NOTE: Insertion() doesn't generate infeasible solutions
 	np.insert(Q, idxPos, idxI)
@@ -117,7 +134,7 @@ def LevyFlights(Fitness):
 
 	alpha = 1.5
 	s = 5.9
-	j = rnd.randint(1, n)
+	j = rnd.randint(1, n+1)
 	F = Fitness[j]
 
 	u = F - min(Fitness)

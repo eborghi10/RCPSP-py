@@ -22,7 +22,7 @@ def cuckoo_search(model, T):
 	MPE = [0] * MaxIt
 	it = 0
 
-	while it < MaxIt:
+	while it < MaxIt :
 
 		it += 1
 
@@ -31,7 +31,6 @@ def cuckoo_search(model, T):
 
 		# Calculate Makespan
 		cmax, Rk = makespan(model, newEgg)
-
 
 		j = np.randint(1,n)
 		Fj = pob["Fitness"][j]

@@ -23,8 +23,54 @@ def newTask(D, i, string):
 
 def makespan(rcpsp, I):
 
-	# TODO.
-	pass
+	n = rcpsp["n"]	# Number of non-dummy activities
+	d = rcpsp["d"]	# Processing time of each activity
+	K = rcpsp["K"]	# Maximum stock quantity for ea. resource
+	r = rcpsp["r"]	# Resource consumption of each task
+	N = rcpsp["N"]	# Precedence constraints
+
+	T = sum(d)		# Upper bound
+	ES = [0] * n	# Earliest Start Time
+	LS = [0] * n	# Lastest Start Time
+
+	R = K	# Maximum resource quantity
+	Rk = np.tile(K,(1,T))
+
+	for mu in range(1,n+1):
+
+		D = []
+
+		for dd in is_not_membc(I,C):
+
+			# Task in order to be scheduled:
+			di = buscar(N[dd-1,:])
+
+			# All of its predecessor were scheduled?
+			if ismembc(di,C):
+				D.append(dd)
+
+		j = D[0]
+		# Searchs for the Lastest Start Time 
+		# of its predecessors
+		H = []
+
+		for h in buscar(N[j-1,:]):
+
+			if h == 1:
+				H.append(0)
+			else:
+				H.append(S["Sol"][h-1] + d[h-1])
+
+		ES[j-2] = int(max(H))
+		LS[j-2] = ES[j-2] + int(d[j-1])
+
+		ES[j-2], LS[j-2] = checkResources(ES[j-2],d[j-1],r[j],Rk)
+
+# TODO: PONER DENTRO DE CheckResources()
+		for t in range(ES[j-2],LS[j-2]):
+			Rk[0][t] += -r[j]
+
+		C.append(j)
 
 def SerialSGS(rcpsp, I, graphic):
 	# Algorithm: Kolisch [2015] page 9
