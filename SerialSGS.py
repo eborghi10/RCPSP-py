@@ -36,30 +36,36 @@ def makespan(rcpsp, I):
 	R = K	# Maximum resource quantity
 	Rk = np.tile(K,(1,T))
 
+	C = [1]
+
 	for mu in range(1,n+1):
 
+####
+		if len(C) > n:
+			print "QUE HACES ACA!"
+####
+
 		D = []
-
+		print "C = " + str(C)
 		for dd in is_not_membc(I,C):
-
 			# Task in order to be scheduled:
 			di = buscar(N[dd-1,:])
 
 			# All of its predecessor were scheduled?
 			if ismembc(di,C):
 				D.append(dd)
-
+		
+		print "D = " + str(D)
 		j = D[0]
 		# Searchs for the Lastest Start Time 
 		# of its predecessors
 		H = []
 
 		for h in buscar(N[j-1,:]):
-
 			if h == 1:
 				H.append(0)
 			else:
-				H.append(S["Sol"][h-1] + d[h-1])
+				H.append(ES[h-1] + d[h-1])
 
 		ES[j-2] = int(max(H))
 		LS[j-2] = ES[j-2] + int(d[j-1])
@@ -71,6 +77,8 @@ def makespan(rcpsp, I):
 			Rk[0][t] += -r[j]
 
 		C.append(j)
+
+	return max(LS), Rk
 
 def SerialSGS(rcpsp, I, graphic):
 	# Algorithm: Kolisch [2015] page 9
@@ -118,7 +126,7 @@ def SerialSGS(rcpsp, I, graphic):
 				D.append(dd)
 
 #		print "D = " + str(D)
-		j = D[0]
+		j = int(D[0])
 #		print "Task chosen = " + str(j) + "\td = " + str(d[j-1]) + "\n"
 
 		# Searchs for the Lastest Start Time 

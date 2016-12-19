@@ -66,9 +66,9 @@ def getCuckoos(model, pob):
 	N = model["N"]
 
 	p, j = LevyFlights(F)
-	Q = q[j-1]	
+	Q = q[j]	
 
-	print "j = " + str(j) + "\tq[j] = " + str(Q)
+	print "q[" + str(j) + "] = " + str(Q)
 	raw_input()
 
 	if p >= 0 and p <= 0.3:
@@ -80,29 +80,31 @@ def getCuckoos(model, pob):
 
 	# Convierte a la tarea en viable
 	x = SSGS(model, qNew, 0)
-	qNew = x["Sol"]
+	return x["Sol"]
 
 
 # TODO: Swap() e Insertion() son funciones bastante similares
 
 def Swap(Q, N):
 
+# TODO: There are some common lines between Swap() and Insertion(),
+#		they can be placed in a common function to avoid duplicates.
+	
 	from extras import buscar, get_limits, search_index
 
 	# Selects the task to swap
-	i = rnd.randint(1, max(Q))	# [1;n]
+	i = rnd.randint(2, max(Q)+1)	# Choose a non-dummy task [2;n)
 	idxI = buscar(Q == i)
 
-	print "TASK = " + str(i) + "\t[idxI] = " + str(idxI)
-
+	print "Swap: j=" + str(i)
+	print "Q_0 = " + str(Q)
 	pred, sucs = get_limits(N, i, Q)
-
-	print "pred: " + str(pred) + "\t\tsucs: " + str(sucs)
 
 	idxPos = search_index(pred.pop(), sucs.pop(), Q)
 	# NOTE: Swap() doesn't generate infeasible solutions
+	print "[" + str(idxI) + "] <-> [" + str(idxPos) + "]"
 	Q[idxI], Q[idxPos] = Q[idxPos], Q[idxI]
-
+	print "Q_1 = " + str(Q)
 	return Q
 
 
@@ -111,19 +113,18 @@ def Insertion(Q, N):
 	from extras import buscar, get_limits, search_index
 
 	# Selects the task to insert
-	i = rnd.randint(1, max(Q))
+	i = rnd.randint(2, max(Q)+1)	# Choose a non-dummy task [2;n)
 	idxI = buscar(Q == i)
 
-	print "TASK = " + str(i) + "\t[idxI] = " + str(idxI)
-
+	print "Insertion: j=" + str(i) + "\t[idxI] = " + str(idxI)
+	print "Q_0 = " + str(Q)
 	pred, sucs = get_limits(N, i, Q)
-
-	print "pred: " + str(pred) + "\t\tsucs: " + str(sucs)
 
 	idxPos = search_index(pred.pop(), sucs.pop(), Q)
 	# NOTE: Insertion() doesn't generate infeasible solutions
+	print "[" + str(idxPos) + "] -> [" + str(idxI) + "]"
 	np.insert(Q, idxPos, idxI)
-
+	print "Q_1 = " + str(Q)
 	return Q
 
 
@@ -134,7 +135,7 @@ def LevyFlights(Fitness):
 
 	alpha = 1.5
 	s = 5.9
-	j = rnd.randint(1, n+1)
+	j = rnd.randint(0, n)
 	F = Fitness[j]
 
 	u = F - min(Fitness)
@@ -147,3 +148,73 @@ def LevyFlights(Fitness):
 		step_size = math.exp(-s * (u ** alpha))
 
 	return step_size, j
+
+
+def mutation(q,K,F,N):
+
+	from extras import get_limits
+
+	n = len(q[0])
+	qNew = np.zeros(q.shape)
+	f = min(F)
+	for j in range(1, q.shape[1]+1):
+	# To do the mutation, the task MUST BE DISCOVERED and
+	# NOT BE the BEST.
+	    if K[j] and (not F[j] == f):
+	        # Select the number of tasks to swap
+	        M = np.randint(n);
+	        for m in range(1,M+1):
+	            # Select the task to swap
+	            Q = q[j]
+	            i = np.randint( max(Q) )
+	            idxI = buscar(Q == i)
+	            [Pred,Sucs] = get_limits(N,i,Q);
+	            idxPos = search_index(Pred,Sucs,Q);
+				# NOTA: Esta operacion no genera soluciones inviables
+	            if idxPos > idxI:
+	                qNew[j] = [
+	                			q[j][:idxI-1], 
+	                			q[j][idxPos],
+	                    		q[j][idxI+1:idxPos-1], 
+	                    		q[j][idxI], 
+	                    		q[j][idxPos+1:]
+	                		]
+	            elif idxPos < idxI:
+	                qNew[j] = [
+	                			q[j][:idxPos-1],
+	                			q[j][idxI],
+	                			q[j][idxPos+1:idxI-1],
+	                			q[j][idxPos],
+	                			q[j][idxI+1:]
+	                		]
+	            else:
+	                qNew[j] = q[j]
+	    else:
+	        qNew[j] = q[j]
+
+	return qNew
+
+
+def empty_nests(pob, rcpsp):
+
+	from metaheuristics import n, Pa
+
+	q = pob["Eggs"]
+	F = pob["Fitness"]
+	N = rcpsp["N"]
+	# The eggs are discovered and are replaced by new ones with a 
+	# probability 'Pa'.
+	
+	# 'K' indicates which eggs are discovered
+	# rnd.random.rand(nSol, 1) > Pa
+
+	K = [1 if itm > Pa else 0 for itm in np.random.rand(n)]
+
+	new_nest = {
+    	"Eggs" : mutation(q,K,F,N),
+    	"Fitness" : pob["Fitness"]
+    }
+
+	for j in range(1,n+1):
+		if K(j):
+			new_nest["Fitness"][j] = MakeSpan(rcpsp,new_nest["Eggs"][j])

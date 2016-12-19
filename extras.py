@@ -115,7 +115,6 @@ def get_limits(N, i, Q) :
 	# Substract each element
 #	_pred_ = [x - 1 for x in buscar(N[i-1])]
 	_pred_ = buscar(N[i-1])
-	print "_pred_ = " + str(_pred_)
 
 	if len(_pred_) > 1 :
 		# If there is more than one predecessor,
@@ -134,10 +133,6 @@ def get_limits(N, i, Q) :
 #	_sucs_ = [x -1 for x in buscar(N[:][i-1])]
 	_sucs_ = buscar(N[:,i-1])
 
-	print "_sucs_ = " + str(_sucs_)
-
-	raw_input()
-
 	if len(_sucs_) > 1 :
 		# If there is more than one successor,
 		# I have to choose which starts first
@@ -154,20 +149,27 @@ def get_limits(N, i, Q) :
 	return pred, sucs
 
 def search_index(pred, sucs, Q) :
-	
-	n = len(Q) + 1 # Fix "half-open" interval of Python
+	print "search_index():"
+	print "Q: " + str(Q)
+	print "pred: " + str(pred)
+	print "sucs: " + str(sucs)
 
-	if pred == 0 and sucs == n+1 :
+	n = len(Q) # Number of non-dummy tasks
+
+	if pred == 1 and sucs == n+2 :
 		# The task can be moved to any position
-		pos = np.random.randint(1, n)
-	elif pred == 0 :
+		pos = np.random.randint(2, n+2)
+	elif pred == 1 :
 		# There is no left limit
-		pos = np.random.randint(1, sucs)
-	elif sucs == n+1 :
+		pos = np.random.randint(2, sucs)
+	elif sucs == n+2 :
 		# There is no right limit
-		pos = np.random.randint(pred, n)
+		pos = np.random.randint(pred, n+2)
 	else :
 		# There is no problem with the limits
 		pos = np.random.randint(pred, sucs)
 
-	return buscar(Q==pos)
+	asd =  buscar(Q==pos)
+	raw_input()
+	print "asd=" + str(asd)
+	return asd

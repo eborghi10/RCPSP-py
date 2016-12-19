@@ -23,3 +23,7 @@
 - Dynamic allocation of variables
 
 - Merge functions into one library file (of load files)
+
+---------------
+
+- Order the files in /src, /include, /tests and, may be, others.
